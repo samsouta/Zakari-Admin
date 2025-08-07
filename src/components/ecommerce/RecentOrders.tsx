@@ -258,6 +258,14 @@ export default function RecentOrders() {
                                   {order?.meta?.server_id || 'N/A'}
                                 </span>
                               </div>
+
+                              {/* //Diamond Amount */}
+                              <div className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
+                                <span className="font-medium"> Fill Amount:</span>
+                                <span className="font-mono bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">
+                                  {order?.product?.data?.amount || 'N/A'}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         )}
