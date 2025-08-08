@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { FormData, UserResponse } from '../../types/authTypes';
+import { AdminResponse, FormData, UserResponse } from '../../types/authTypes';
 
 interface AuthResponse {
   success: boolean;
@@ -163,6 +163,19 @@ export const authApi = createApi({
       invalidatesTags: ['Auth'],
     }),
 
+
+    /**
+     * GET admin status
+     */
+    getAdminStatus: builder.query<AdminResponse, void>({
+      query: () => ({
+        url: `admin-status`,
+        method: 'GET',
+      }),
+      providesTags: ['Auth'], // Provide auth-related cache tag
+    }),
+
+
   }),
 });
 
@@ -175,5 +188,6 @@ export const {
   useUpdateAdminStatusMutation,
   useGetUsersQuery,
   useUpdateWalletMutation,
-  useBlockUserMutation
+  useBlockUserMutation,
+  useGetAdminStatusQuery
 } = authApi;

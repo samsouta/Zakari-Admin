@@ -14,18 +14,23 @@ type Game = {
   name: string;
 };
 
-
-
-
-type AddProductModalProps = {
+type EditProductModalProps = {
   error: string | null;
   isLoading: boolean;
   isOpen: boolean;
+  product: FormProps | null; // The product to edit
   onClose: () => void;
   onSubmit: (product: FormProps) => void;
 };
 
-export const AddProductModal: React.FC<AddProductModalProps> = ({ error, isLoading, isOpen, onClose, onSubmit }) => {
+export const EditProductModal: React.FC<EditProductModalProps> = ({ 
+  error, 
+  isLoading, 
+  isOpen, 
+  product,
+  onClose, 
+  onSubmit 
+}) => {
   const [formData, setFormData] = useState<FormProps>({
     service_id: 0,
     game_id: 0,
@@ -47,6 +52,28 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ error, isLoadi
   const { data: servicesData, isLoading: servicesLoading } = useGetServicesQuery();
   const { data: gamesData, isLoading: gamesLoading } = useGetGamesTypeQuery();
   const [errorsms, setErrorsms] = useState<string | null>(null);
+
+  // Initialize form data when product changes or modal opens
+  useEffect(() => {
+    if (isOpen && product) {
+      setFormData({
+        service_id: product.service_id || 0,
+        game_id: product.game_id || 0,
+        product_type: product.product_type || "account",
+        name: product.name || "",
+        description: product.description || "",
+        img_url: product.img_url || "",
+        preview_img: product.preview_img || [],
+        price: product.price || 0,
+        fake_price: product.fake_price || 0,
+        is_popular: product.is_popular || false,
+        data: product.data || {},
+        credentials: product.credentials || {},
+      });
+      setPreviewImages(product.preview_img || []);
+      setErrorsms(null);
+    }
+  }, [isOpen, product]);
 
   // Fetch services and games on component mount
   useEffect(() => {
@@ -91,20 +118,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ error, isLoadi
       setErrorsms("Original price must be greater than selling price");
       return false;
     }
-    if (formData.product_type === "account") {
-      if (!formData.credentials?.email?.trim()) {
-        setErrorsms("Email is required for account products");
-        return false;
-      }
-      if (!formData.credentials?.email_password?.trim()) {
-        setErrorsms("Email password is required for account products");
-        return false;
-      }
-      if (!formData.credentials?.game_password?.trim()) {
-        setErrorsms("Game password is required for account products");
-        return false;
-      }
-    }
+  
     return true;
   };
 
@@ -152,14 +166,6 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ error, isLoadi
     });
   };
 
-  // Handle credentials object fields
-  const handleCredentialsChange = (field: string, value: string) => {
-    setErrorsms(null);
-    setFormData({
-      ...formData,
-      credentials: { ...formData.credentials, [field]: value }
-    });
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -170,34 +176,41 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ error, isLoadi
 
     onSubmit(formData);
     onClose();
-    // Reset form
-    setFormData({
-      service_id: 0,
-      game_id: 0,
-      product_type: "account",
-      name: "",
-      description: "",
-      img_url: "",
-      preview_img: [],
-      price: 0,
-      fake_price: 0,
-      is_popular: false,
-      data: {},
-      credentials: {},
-    });
-    setPreviewImages([]);
-    setErrorsms(null);
   };
+
+  const handleClose = () => {
+    // Reset form to original product data when closing
+    if (product) {
+      setFormData({
+        service_id: product.service_id || 0,
+        game_id: product.game_id || 0,
+        product_type: product.product_type || "account",
+        name: product.name || "",
+        description: product.description || "",
+        img_url: product.img_url || "",
+        preview_img: product.preview_img || [],
+        price: product.price || 0,
+        fake_price: product.fake_price || 0,
+        is_popular: product.is_popular || false,
+        data: product.data || {},
+        credentials: product.credentials || {},
+      });
+      setPreviewImages(product.preview_img || []);
+    }
+    setErrorsms(null);
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onClose={onClose} className="relative z-[99999] text-black dark:text-white">
+    <Dialog open={isOpen} onClose={handleClose} className="relative z-[99999] text-black dark:text-white">
       <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
       <div className="fixed inset-0 flex items-center justify-center p-2 sm:p-4">
         <Dialog.Panel className="mx-auto w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] rounded-lg bg-white dark:bg-gray-900 shadow-xl overflow-hidden flex flex-col">
           {/* Fixed Header */}
           <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-            <Dialog.Title className="text-lg sm:text-xl font-semibold">Add Product</Dialog.Title>
+            <Dialog.Title className="text-lg sm:text-xl font-semibold">Edit Product</Dialog.Title>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="text-gray-500 hover:text-red-500 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <X className="w-5 h-5" />
@@ -415,45 +428,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ error, isLoadi
                 </div>
               )}
 
-              {/* Credentials (for accounts) */}
-              {formData.service_id === 1 && (
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 sm:p-6">
-                  <label className="block text-sm font-medium mb-4 text-gray-700 dark:text-gray-300">Account Credentials</label>
-                  <div className="grid grid-cols-1 gap-4">
-                    <div>
-                      <label className="block text-xs font-medium mb-1 text-gray-600 dark:text-gray-400">Email</label>
-                      <input
-                        placeholder="example@email.com"
-                        value={(formData.credentials)?.email || ""}
-                        onChange={(e) => handleCredentialsChange('email', e.target.value)}
-                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-medium mb-1 text-gray-600 dark:text-gray-400">Email Password</label>
-                        <input
-                          placeholder="Enter email password"
-                          type="password"
-                          value={(formData.credentials)?.email_password || ""}
-                          onChange={(e) => handleCredentialsChange('email_password', e.target.value)}
-                          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium mb-1 text-gray-600 dark:text-gray-400">Game Password</label>
-                        <input
-                          placeholder="Enter game password"
-                          type="password"
-                          value={(formData.credentials)?.game_password || ""}
-                          onChange={(e) => handleCredentialsChange('game_password', e.target.value)}
-                          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+             
 
               <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <input
@@ -521,7 +496,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ error, isLoadi
           <div className="flex-shrink-0 p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700">
             <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="w-full sm:w-auto px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-medium"
               >
                 Cancel
@@ -534,10 +509,10 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ error, isLoadi
                 {isLoading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Loading...
+                    Updating...
                   </>
                 ) : (
-                  'Save Product'
+                  'Update Product'
                 )}
               </button>
             </div>

@@ -31,7 +31,7 @@ export default function Home() {
           <DemographicCard />
         </div> */}
 
-        <div className="col-span-12">
+        <div className="col-span-12 mb-28">
           <RecentOrders />
         </div>
       </div>

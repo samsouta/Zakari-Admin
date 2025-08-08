@@ -1,16 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import Cookies from 'js-cookie';
-import { useLogOutMutation, useUpdateAdminStatusMutation } from "../../services/api/authApi";
+import { useGetAdminStatusQuery, useLogOutMutation, useUpdateAdminStatusMutation } from "../../services/api/authApi";
 import { HatGlasses } from "lucide-react";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const Info = JSON.parse(Cookies.get('user') || '{}');
-  const [isOnline, setIsOnline] = useState(Cookies.get('is_online') === 'true');
+  const [isOnline, setIsOnline] = useState(false);
   const token = Cookies.get('token');
   const [logOut, { isLoading }] = useLogOutMutation();
   const [updateAdminStatus, { isLoading: isUpdating }] = useUpdateAdminStatusMutation();
+  const {data , isLoading: isLoadingAdmin} = useGetAdminStatusQuery();
+  const admin = data?.data?.[0]; 
+
+  /**
+   * @get current admin status
+   * @description get admin status from server
+   */
+  useEffect(() => {
+    if (!isLoadingAdmin) {
+      setIsOnline(admin?.is_online || false);
+    }
+  }, [admin, isLoadingAdmin]);
+
+
 
   function toggleDropdown() {
     setIsOpen(!isOpen);

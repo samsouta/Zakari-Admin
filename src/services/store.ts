@@ -2,17 +2,16 @@ import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
 import { productApi } from './api/productApi';
 import { authApi } from './api/authApi';
+import { gameApi } from './api/gameApi';
 
 
 export const store = configureStore({
     reducer: {
         //  API reducers
         [authApi.reducerPath]: authApi.reducer,
-        // [ServicesApi.reducerPath]: ServicesApi.reducer,
+        [gameApi.reducerPath]: gameApi.reducer,
         [productApi.reducerPath]: productApi.reducer,
-        // [ReviewAPI.reducerPath]: ReviewAPI.reducer,
-        // [messageAPI.reducerPath]: messageAPI.reducer,
-        // [orderAPI.reducerPath]: orderAPI.reducer,
+     
 
 
         //Slice 
@@ -25,11 +24,9 @@ export const store = configureStore({
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
             authApi.middleware,
-            //   ServicesApi.middleware,
+            gameApi.middleware,
             productApi.middleware,
-            //   ReviewAPI.middleware,
-            //   messageAPI.middleware,
-            //   orderAPI.middleware,
+         
         ),
 })
 

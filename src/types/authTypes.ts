@@ -32,3 +32,13 @@ export interface UserResponse {
   today_count: number;
   yesterday_count: number;
 }
+
+export interface AdminResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: number;
+    username: string;
+    is_online: boolean;
+  }[];
+}
