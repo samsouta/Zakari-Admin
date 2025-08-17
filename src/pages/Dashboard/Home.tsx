@@ -4,6 +4,7 @@ import StatisticsChart from "../../components/ecommerce/StatisticsChart";
 import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
 import RecentOrders from "../../components/ecommerce/RecentOrders";
 import PageMeta from "../../components/common/PageMeta";
+import TopUpTable from "../../components/ecommerce/TopUpTable";
 
 export default function Home() {
   return (
@@ -31,8 +32,11 @@ export default function Home() {
           <DemographicCard />
         </div> */}
 
-        <div className="col-span-12 mb-28">
+        <div className="col-span-12 mb-10">
           <RecentOrders />
+        </div>
+        <div className="col-span-12 mb-28">
+          <TopUpTable />
         </div>
       </div>
     </>

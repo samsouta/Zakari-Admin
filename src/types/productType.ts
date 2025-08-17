@@ -6,6 +6,7 @@ export type ServicesType = {
   description: string;
   img_url: string;
   is_hot: boolean;
+  created_at: string;
 }
 
 export type ServiceResponse = {
@@ -14,11 +15,16 @@ export type ServiceResponse = {
   data: ServicesType[];
 }
 
+export type ServiceByIdResponse = {
+  success: boolean;
+  message: string;
+  data: ServicesType;
+}
+
 export type ProductData = {
   id: number;
   game_id: number;
   service_id: number;
-  product_type: string;
   name: string;
   description: string;
   img_url: string;
@@ -97,6 +103,8 @@ export type OrderResponse = {
   orders?: OrderType[];
   today_count: number;
   yesterday_count: number;
+  increase_percentage: number;
+  last_month: number
 };
 
 export type UserMeta = {
@@ -136,7 +144,7 @@ export type GameResponse = {
   success: boolean;
   message: string;
   data: GameType[];
-  
+
 }
 
 
@@ -158,7 +166,6 @@ export type GameType = {
 export type FormProps = {
   service_id: number;
   game_id: number;
-  product_type: "account" | "coin";
   name: string;
   description: string;
   img_url: string;
@@ -170,7 +177,7 @@ export type FormProps = {
     rank?: string;
     skin_count?: number;
     hero_count?: number;
-    amount? : number 
+    amount?: number
   };
   credentials: {
     email?: string;
@@ -198,7 +205,7 @@ export type GetProductWithIdResponse = {
       rank: string;
       hero_count: string;
       skin_count: string;
-      amount? : number 
+      amount?: number
     };
     credentials: {
       email?: string;

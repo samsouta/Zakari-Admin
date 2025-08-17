@@ -2,7 +2,6 @@ import { useAddProductMutation, useDeleteProductMutation, useEditProductMutation
 import { useEffect, useState } from "react";
 import { FormProps, ProductData } from "../../types/productType";
 import { productFilterItems } from "../../data/FilterItems";
-// import Cookies from "js-cookie";
 import Badge from "../../components/ui/badge/Badge";
 import { PlusCircleIcon, Settings2, Trash2 } from "lucide-react";
 import { AddProductModal } from "./AddProductModal";
@@ -40,7 +39,6 @@ export default function ProductTable() {
         const transformedProduct: FormProps = {
             service_id: product.service_id,
             game_id: product.game_id,
-            product_type: product.product_type as "account" | "coin", // cast string to union
             name: product.name,
             description: product.description,
             img_url: product.img_url,
@@ -77,7 +75,7 @@ export default function ProductTable() {
                 if (typeof selectedFilter === 'boolean') {
                     return product.is_sold === selectedFilter;
                 }
-                return product.product_type === selectedFilter;
+                return product?.service?.name?.toLowerCase().replace(/\s+/g, '-') === selectedFilter;
             });
         }
 
@@ -119,7 +117,6 @@ export default function ProductTable() {
      * @description Handles the submission of the add product form.
      */
     const handleAddProductSubmit = async (formData: FormProps) => {
-
         if (!formData) {
             return;
         }
@@ -164,6 +161,7 @@ export default function ProductTable() {
                 setError(null);
             } else {
                 setError(res?.message);
+                console.log(res?.message)
             }
         } catch (error) {
             console.error("Error adding product:", error);
@@ -394,7 +392,7 @@ export default function ProductTable() {
                                                         {product?.name}
                                                     </p>
                                                     <div className="flex gap-1 mt-1">
-                                                        {product?.product_type === "account" ? (
+                                                        {product?.service?.name === "account" ? (
                                                             <div className="flex flex-wrap items-center gap-2 text-xs">
                                                                 {product?.data?.rank && (
                                                                     <span className="px-2.5 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full shadow-sm hover:shadow-md transition-all">
@@ -439,7 +437,7 @@ export default function ProductTable() {
                                             </div>
                                         </td>
                                         <td className="px-4 py-4 text-gray-700 dark:text-gray-300">
-                                            <span className="capitalize">{product?.product_type}</span>
+                                            <span className="capitalize">{product?.service?.name}</span>
                                         </td>
                                         <td className="px-4 py-4 text-gray-700 dark:text-gray-300">
                                             <span className="font-semibold">MMK {Math.floor(Number(product?.price))}</span>

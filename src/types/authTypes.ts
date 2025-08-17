@@ -23,6 +23,7 @@ export type UserType = {
   wallet_amount: string;
   is_banned: boolean;
   ban_reason: string | null;
+  created_at: string;
   email_verified_at: string | null;
 }
 export interface UserResponse {
@@ -41,4 +42,33 @@ export interface AdminResponse {
     username: string;
     is_online: boolean;
   }[];
+}
+
+/**
+ * User Review Types
+ */
+
+export type ReviewUser = {
+  id: number;
+  username: string;
+}
+
+export type ReviewType = {
+  id: number;
+  user_id: number;
+  rating: number;
+  comment: string;
+  created_at: string;
+  user: ReviewUser;
+}
+
+export interface ReviewResponse {
+  success: boolean;
+  message: string;
+  data: ReviewType[];
+}
+
+export type SuccessResponse = {
+  success: boolean;
+  message: string;
 }

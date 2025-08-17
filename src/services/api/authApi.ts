@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { AdminResponse, FormData, UserResponse } from '../../types/authTypes';
+import { AdminResponse, FormData, ReviewResponse, SuccessResponse, UserResponse } from '../../types/authTypes';
 
 interface AuthResponse {
   success: boolean;
@@ -95,7 +95,6 @@ export const authApi = createApi({
         url: `users`,
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
       }),
@@ -176,6 +175,31 @@ export const authApi = createApi({
     }),
 
 
+    /**
+     * Get all user reviews
+     */
+    getUserReviews: builder.query<ReviewResponse, void>({
+      query: () => ({
+        url: `reviews`,
+        method: 'GET',
+      }),
+      providesTags: ['Auth'], // Provide auth-related cache tag
+    }),
+
+    /**
+     * DELETE USER reviews
+     */
+    deleteUserReview: builder.mutation<SuccessResponse, { token: string, reviewId: number }>({
+      query: ({ token, reviewId }) => ({
+        url: `reviews/${reviewId}`,
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      }),
+      invalidatesTags: ['Auth'],
+    }),
   }),
 });
 
@@ -189,5 +213,9 @@ export const {
   useGetUsersQuery,
   useUpdateWalletMutation,
   useBlockUserMutation,
-  useGetAdminStatusQuery
+  useGetAdminStatusQuery,
+
+  /// user reivews
+  useGetUserReviewsQuery,
+  useDeleteUserReviewMutation
 } = authApi;

@@ -2,14 +2,17 @@ import {
   ArrowUpIcon,
   BoxIconLine,
 } from "../../icons";
-import { useGetProductsQuery } from "../../services/api/productApi";
+import { useGetAllOrdersQuery, useGetProductsQuery } from "../../services/api/productApi";
 
 import Badge from "../ui/badge/Badge";
 import cookie from 'js-cookie';
 
 export default function ProductMetrics() {
   const token = cookie.get('token');
+  const { data: orders } = useGetAllOrdersQuery(token || '');
   const { data: products } = useGetProductsQuery();
+  const orderCount = orders?.orders?.length || 0;
+  const increasePercentage = orders?.increase_percentage || 0
 
 
 
@@ -53,18 +56,18 @@ export default function ProductMetrics() {
         <div className="flex items-end justify-between mt-4 sm:mt-5">
           <div>
             <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-              Popular Products
+             Total Orders
             </span>
             <h4 className="mt-1 sm:mt-2 font-bold text-gray-800 text-base sm:text-title-sm dark:text-white/90">
-              125
+              {orderCount}
             </h4>
             <p className="text-[10px] sm:text-xs mt-1 text-gray-500 dark:text-gray-400">
               Increased from last month
             </p>
           </div>
-          <Badge color="success" className="scale-90 sm:scale-100">
+          <Badge color={increasePercentage === 0 ? "error" : "success"}>
             <ArrowUpIcon className="mr-1" />
-            12%
+            {increasePercentage}%
           </Badge>
         </div>
       </div>

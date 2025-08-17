@@ -52,7 +52,7 @@ export default function RecentOrders() {
       const gameNameMatch = order.product?.game?.name?.toLowerCase().includes(query);
       
       // Search by product type/category
-      const categoryMatch = order.product?.product_type?.toLowerCase().includes(query);
+      const categoryMatch = order.product?.service?.name?.toLowerCase().includes(query);
 
       return orderIdMatch || productNameMatch || usernameMatch || gameNameMatch || categoryMatch;
     });
@@ -378,7 +378,7 @@ export default function RecentOrders() {
                       </div>
                     </td>
                     <td className="px-4 py-4 text-gray-700 dark:text-gray-300">
-                      {order.product?.product_type}
+                      {order.product?.service?.name}
                     </td>
                     <td className="px-4 py-4 text-gray-700 dark:text-gray-300">
                       MMK {Math.floor(Number(order.product?.price))}
@@ -409,7 +409,7 @@ export default function RecentOrders() {
                       )}
                     </td>
                     <td className="px-4 py-4 relative">
-                      {order?.product?.product_type === "coin" && (
+                      {order?.product?.service?.name === "coin" && (
                         <>
                           <button
                             onClick={() => {

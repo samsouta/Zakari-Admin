@@ -21,6 +21,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import { ProductManagement } from "./pages/Dashboard/ProductManagement";
 import { Payments } from "./pages/Payments/Payments";
 import { BlockList } from "./pages/BlockList/BlockList";
+import UserReview from "./pages/Dashboard/UserReview";
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
             <Route path="/product-management" element={<ProductManagement />} />
             <Route path="/payments" element={<Payments />} />
             <Route path="/block-list" element={<BlockList />} />
+            <Route path="/reviews" element={<UserReview />} />
 
             {/* Forms */}
             <Route path="/form-elements" element={<FormElements />} />

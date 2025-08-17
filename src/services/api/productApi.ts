@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { AllProductsResponse, FormProps, GameResponse, GetProductWithIdResponse, MonthlySalesResponse, MonthlyTargetResponse, OrderResponse, ServiceResponse, StatisticsChartResponse } from '../../types/productType';
+import { GetTopUpResponse } from '../../types/TopUpType';
 
 const BaseUrl = import.meta.env.VITE_API_BASE;
 
@@ -227,6 +228,35 @@ export const productApi = createApi({
             providesTags: ['product'],
         }),
 
+        /**
+         * GET All Top-Up Order 
+         */
+        getTopUpOrders: builder.query<GetTopUpResponse, string>({
+            query: (token) => ({
+                url: `admin/topup-orders`,
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+            }),
+            providesTags: ['product'],
+        }),
+        /**
+         * UPDATE TOP UP 
+         */
+        updateTopUp: builder.mutation<GetTopUpResponse, { token: string, order_id: number }>({
+            query: ({ token, order_id }) => ({
+                url: `topup-orders/${order_id}`,
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: {
+                    status: 'confirmed'
+                }
+            }),
+            invalidatesTags: ['product'],
+        }),
     }),
 })
 export const {
@@ -242,5 +272,7 @@ export const {
     useAddProductMutation,
     useEditProductMutation,
     useGetProductsWithIdQuery,
-    useDeleteProductMutation
+    useDeleteProductMutation,
+    useGetTopUpOrdersQuery,
+    useUpdateTopUpMutation
 } = productApi;

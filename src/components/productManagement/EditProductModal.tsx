@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Dialog } from "@headlessui/react";
 import { X, Plus, Trash2 } from "lucide-react";
 import { FormProps } from "../../types/productType";
@@ -23,18 +23,17 @@ type EditProductModalProps = {
   onSubmit: (product: FormProps) => void;
 };
 
-export const EditProductModal: React.FC<EditProductModalProps> = ({ 
-  error, 
-  isLoading, 
-  isOpen, 
+export const EditProductModal: React.FC<EditProductModalProps> = ({
+  error,
+  isLoading,
+  isOpen,
   product,
-  onClose, 
-  onSubmit 
+  onClose,
+  onSubmit
 }) => {
   const [formData, setFormData] = useState<FormProps>({
     service_id: 0,
     game_id: 0,
-    product_type: "account",
     name: "",
     description: "",
     img_url: "",
@@ -52,6 +51,9 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
   const { data: servicesData, isLoading: servicesLoading } = useGetServicesQuery();
   const { data: gamesData, isLoading: gamesLoading } = useGetGamesTypeQuery();
   const [errorsms, setErrorsms] = useState<string | null>(null);
+  const currentService = useMemo(() => {
+    return services.find(item => item.id === formData.service_id)?.name.toLowerCase() || '';
+  }, [formData.service_id, services]);
 
   // Initialize form data when product changes or modal opens
   useEffect(() => {
@@ -59,7 +61,6 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
       setFormData({
         service_id: product.service_id || 0,
         game_id: product.game_id || 0,
-        product_type: product.product_type || "account",
         name: product.name || "",
         description: product.description || "",
         img_url: product.img_url || "",
@@ -118,7 +119,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
       setErrorsms("Original price must be greater than selling price");
       return false;
     }
-  
+
     return true;
   };
 
@@ -184,7 +185,6 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
       setFormData({
         service_id: product.service_id || 0,
         game_id: product.game_id || 0,
-        product_type: product.product_type || "account",
         name: product.name || "",
         description: product.description || "",
         img_url: product.img_url || "",
@@ -261,19 +261,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
                 </div>
               </div>
 
-              {/* Product Type */}
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Product Type</label>
-                <select
-                  name="product_type"
-                  value={formData.product_type}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                >
-                  <option value="account">Account</option>
-                  <option value="coin">Coin</option>
-                </select>
-              </div>
+
 
               {/* Basic Info */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
@@ -313,7 +301,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
               </div>
 
               {/* Preview Images */}
-              {formData?.service_id === 1 &&
+              {currentService === 'account' &&
                 (
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 sm:p-6">
                     <label className="block text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Preview Images</label>
@@ -376,7 +364,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
               </div>
 
               {/* Game Data */}
-              {formData.service_id === 1 && (
+              {currentService === 'account' && (
                 <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 sm:p-6">
                   <label className="block text-sm font-medium mb-4 text-gray-700 dark:text-gray-300">Game Data</label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -413,7 +401,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
                 </div>
               )}
 
-              {formData.service_id === 2 && (
+              {currentService === 'coin' && (
                 <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 sm:p-6">
                   <label className="block text-sm font-medium mb-4 text-gray-700 dark:text-gray-300">Amount</label>
                   <div>
@@ -428,7 +416,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
                 </div>
               )}
 
-             
+
 
               <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <input

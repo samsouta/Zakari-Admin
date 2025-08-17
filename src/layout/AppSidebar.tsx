@@ -33,6 +33,7 @@ const navItems: NavItem[] = [
       { name: "Product Management", path: '/product-management', pro: false },
       { name: "Payments", path: '/payments', pro: false },
       { name: "Block List", path: '/block-list', pro: false },
+      { name: "User Review", path: '/reviews', pro: false },
     ],
   },
   {
